@@ -353,7 +353,7 @@ public class DeliveryService {
         int delaySeconds;
 
         switch(currentStatus){
-            case ORDERED:
+            case SCHEDULED, ORDERED:
                 delaySeconds = forOrdered;
                 break;
             case PREPARING:
@@ -380,7 +380,7 @@ public class DeliveryService {
 
                     if (delivery.getActive() && delivery.getStatus() != DeliveryStatus.CANCELED) {
 //                        DeliveryStatus newStatus = null;
-                        if (delivery.getStatus() == DeliveryStatus.ORDERED) {
+                        if (delivery.getStatus() == DeliveryStatus.ORDERED || delivery.getStatus() == DeliveryStatus.SCHEDULED) {
                             newStatus = DeliveryStatus.PREPARING;
                         } else if (delivery.getStatus() == DeliveryStatus.PREPARING) {
                             newStatus = DeliveryStatus.IN_DELIVERY;
