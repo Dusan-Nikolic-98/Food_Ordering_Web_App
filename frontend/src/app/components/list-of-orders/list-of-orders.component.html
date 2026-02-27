@@ -1,1 +1,71 @@
-<p>list-of-orders works!</p>
+<div class="container">
+  <h1 class="title">📦 Deliveries</h1>
+
+  <form class="search-form" (ngSubmit)="search()">
+    <div class="form-row">
+      <label>Status:</label>
+
+      <mat-selection-list [(ngModel)]="statuses" name="statuses">
+        <mat-list-option value="ORDERED">Ordered</mat-list-option>
+        <mat-list-option value="PREPARING">Preparing</mat-list-option>
+        <mat-list-option value="IN_DELIVERY">In delivery</mat-list-option>
+        <mat-list-option value="DELIVERED">Delivered</mat-list-option>
+        <mat-list-option value="CANCELED">Canceled</mat-list-option>
+        <mat-list-option value="DECLINED">Declined</mat-list-option>
+      </mat-selection-list>
+
+    </div>
+
+    <div class="form-row">
+      <label>Date From:</label>
+      <input type="date" [(ngModel)]="dateFrom" name="dateFrom" />
+    </div>
+
+    <div class="form-row">
+      <label>Date To:</label>
+      <input type="date" [(ngModel)]="dateTo" name="dateTo" />
+    </div>
+
+    <div class="form-row" *ngIf="isAdmin">
+      <label>User:</label>
+      <select [(ngModel)]="userId" name="userId">
+        <option [value]="null">Any</option>
+        <option *ngFor="let user of users" [value]="user.userId">
+          {{ user.name }} ({{ user.username }})
+        </option>
+      </select>
+    </div>
+
+    <div class="form-row buttons-row">
+      <button type="submit" class="btn">Search</button>
+      <button type="button" class="btn btn-reset" (click)="resetForm()">reset params</button>
+    </div>
+  </form>
+
+  <!-- pa lista -->
+  <div class="list">
+    <div *ngFor="let d of deliveries" class="card">
+      <div class="card-header">
+        <h2>Order #{{ d.id }} - <span class="status-badge" [ngClass]="statusClass(d.status)">{{ d.status }}</span></h2>
+        <button
+          *ngIf="d.status === 'ORDERED' && hasPermission('can_cancel_order')"
+          class="btn btn-cancel"
+          (click)="cancelOrder(d.id)"
+        >
+          Cancel order
+        </button>
+      </div>
+      <div class="card-body">
+        <p><strong>By:</strong> {{ d.createdByUsername }}</p>
+        <p><strong>Created At:</strong> {{ d.createdAt | date:'short' }}</p>
+        <p><strong>Active:</strong> {{ d.active ? '✅' : '❌' }}</p>
+        <div>
+          <strong>Items:</strong>
+          <ul>
+            <li *ngFor="let item of d.items">{{ item.name }} ({{ item.pricePerDish | currency }})</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

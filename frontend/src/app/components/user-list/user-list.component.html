@@ -1,1 +1,33 @@
-<p>user-list works!</p>
+<div *ngIf="!hasPermission('can_read_users')" class="alert alert-danger">
+  You don't even have permission to view users:  (
+</div>
+
+<!--<div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>-->
+<div *ngIf="hasPermission('can_read_users')">
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Permissions</th>
+      <th  *ngIf="hasPermission('can_delete_users')">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let user of users">
+      <!--      <td (click)="editUser(user.userId)">{{ user.name }}</td>-->
+      <td *ngIf="hasPermission('can_update_users'); else noEdit">
+        <a (click)="editUser(user.userId)">{{ user.name }}</a>
+      </td>
+      <ng-template #noEdit>
+        <span>{{ user.name }}</span>
+      </ng-template>
+      <td>{{ user.username }}</td>
+      <td>{{ user.permissionsString }}</td>
+      <td  *ngIf="hasPermission('can_delete_users')">
+        <button class="btn btn-danger btn-sm" (click)="deleteUser(user.userId)">Delete</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>

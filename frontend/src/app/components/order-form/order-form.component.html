@@ -1,1 +1,57 @@
-<p>order-form works!</p>
+<div class="order-container">
+  <h2 class="title">Place Your Order 🍽️</h2>
+
+  <div class="dish-grid">
+    <div *ngFor="let dish of dishes" class="dish-card">
+      <img [src]="dish.imageUrl" alt="{{dish.name}}" />
+      <h3>{{dish.name}}</h3>
+
+      <div class="quantity-controls">
+        <button (click)="decreaseQuantity(dish)" [disabled]="selectedDishes[dish.name] === 0">-</button>
+        <span>{{selectedDishes[dish.name]}}</span>
+        <button (click)="increaseQuantity(dish)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button *ngIf="hasPermission('can_place_order')" (click)="placeOrder()" [disabled]="!hasSelectedDishes">Place Order</button>
+    <button *ngIf="hasPermission('can_schedule_order')" (click)="openSchedulePopup()" [disabled]="!hasSelectedDishes">Schedule Order</button>
+  </div>
+
+  <!-- popap -->
+  <div class="popup-overlay" *ngIf="showSchedulePopup">
+    <div class="popup">
+      <h3>Schedule Your Order</h3>
+
+      <form [formGroup]="scheduleForm" class="schedule-form">
+        <mat-form-field appearance="fill">
+          <mat-label>Pick a date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="date">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <div class="time-selectors">
+          <mat-form-field appearance="fill">
+            <mat-label>Hour</mat-label>
+            <mat-select formControlName="hour">
+              <mat-option *ngFor="let h of hours" [value]="h">{{h}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Minute</mat-label>
+            <mat-select formControlName="minute">
+              <mat-option *ngFor="let m of minutes" [value]="m">{{m}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </form>
+      <div class="popup-actions">
+        <button (click)="closeSchedulePopup()">Cancel</button>
+        <button (click)="confirmSchedule()" [disabled]="!isScheduleTimeValid">Schedule!</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,1 +1,46 @@
-<p>error-list works!</p>
+<div class="p-4">
+  <h2 class="mb-4 text-xl font-semibold">Error Log</h2>
+
+  <mat-card *ngIf="isAdmin" class="mb-4 p-3">
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Filter by User ID</mat-label>
+      <input matInput type="number" [(ngModel)]="userId" (keyup.enter)="fetchErrors()" />
+    </mat-form-field>
+    <button mat-flat-button color="primary" (click)="fetchErrors()">Apply Filter</button>
+  </mat-card>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+  <mat-card *ngFor="let err of errors" class="mb-3 shadow-md">
+    <mat-card-title>
+      <span class="font-medium text-red-600">{{ err.message }}</span>
+    </mat-card-title>
+    <mat-card-subtitle>
+      <span>ID: {{ err.id }} | User: {{ err.username }} ({{ err.userId }})</span>
+    </mat-card-subtitle>
+    <mat-card-content>
+      <ng-container *ngIf="err.message !== 'Scheduled order declined due to too many deliveries at desired time'">
+        <p>Delivery ID: {{ err.deliveryId }}</p>
+        <p>Status at Decline: {{ err.statusAtDecline }}</p>
+      </ng-container>
+      <p class="text-gray-600">
+        Error created at: {{ err.createdAt | date:'short' }}
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="flex items-center justify-between mt-4">
+    <mat-paginator
+      [length]="totalElements"
+      [pageSize]="pageSize"
+      [pageIndex]="currentPage"
+      (page)="onPageChange($event)">
+    </mat-paginator>
+
+    <button mat-stroked-button color="primary" class="ml-3" (click)="skipToEdge()">
+      {{ currentPage === getLastPage() ? '⏮ Skip to Start' : '⏭ Skip to End' }}
+    </button>
+
+  </div>
+
+</div>
